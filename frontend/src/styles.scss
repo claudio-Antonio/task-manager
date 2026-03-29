@@ -1,0 +1,36 @@
+@use '@angular/material' as mat;
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background-color: #121212;
+  color: rgba(255, 255, 255, 0.87);
+}
+
+// Material dark theme
+@include mat.core();
+
+$dark-theme: mat.define-dark-theme((
+  color: (
+    primary: mat.define-palette(mat.$deep-purple-palette),
+    accent: mat.define-palette(mat.$amber-palette),
+    warn: mat.define-palette(mat.$red-palette),
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+@include mat.all-component-themes($dark-theme);
+
+// Table row hover
+.mat-mdc-row:hover {
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+// Snackbar
+.mat-mdc-snack-bar-container {
+  --mdc-snackbar-container-color: #323232;
+}
+
+* { box-sizing: border-box; }
