@@ -1,0 +1,56 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  # Job 1: Teste e Build do Backend
+  backend-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+          
+      - name: Build with Maven
+        run: mvn -privileged clean package -DskipTests
+        working-directory: ./backend
+
+  # Job 2: Teste e Build do Frontend
+  frontend-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: './frontend/package-lock.json'
+          
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./frontend
+        
+      - name: Angular Build
+        run: npm run build --configuration=production
+        working-directory: ./frontend
+
+  # Job 3: Docker Check (Garante que o Docker Compose ainda funciona)
+  docker-build-check:
+    needs: [backend-build, frontend-build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Build Docker Images
+        run: docker compose build
